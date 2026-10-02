@@ -38,4 +38,4 @@
 // ─── Opção B: URL absoluta (para acesso direto sem proxy) ─
 // Descomente a linha abaixo e comente a Opção A se quiser
 // acessar o backend diretamente (exige CORS configurado).
-window.FCN_API_BASE = 'https:/felizcasanovaapi.foxheart.com.br/api';
+window.FCN_API_BASE = 'https://felizcasanovaapi.foxheart.com.br/api';
