@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Teste - Painel Feliz Casa Nova</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:sans-serif;max-width:960px;margin:32px auto;padding:16px;background:#f0f2f5}
+.card{background:#fff;border-radius:10px;padding:24px 28px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,0.08)}
+h1{color:#1a2634;margin:0;font-size:1.4rem}
+h2{color:#2c3e50;font-size:1.1rem;border-bottom:2px solid #2980b9;padding-bottom:6px}
+.s{padding:12px 16px;border-radius:6px;margin:10px 0;font-weight:500;line-height:1.5}
+.s-ok{background:#d4edda;color:#155724;border-left:4px solid #28a745}
+.s-err{background:#f8d7da;color:#721c24;border-left:4px solid #dc3545}
+.s-warn{background:#fff3cd;color:#856404;border-left:4px solid #ffc107}
+.s-info{background:#d1ecf1;color:#0c5460;border-left:4px solid #17a2b8}
+code{background:#e8eaed;padding:2px 7px;border-radius:4px;font-size:.9em;font-family:monospace}
+button{background:#2980b9;color:#fff;border:0;padding:10px 22px;border-radius:6px;cursor:pointer;font-size:.95rem;margin:6px 4px}
+button:hover{background:#1f6fa0}
+button:disabled{opacity:.55;cursor:wait}
+.ep{display:flex;align-items:center;gap:12px;padding:8px 12px;margin:6px 0;background:#f7f9fb;border-radius:6px;border-left:3px solid #b0c4d8}
+.ep .mtd{display:inline-block;font-weight:600;font-size:.75rem;padding:2px 8px;border-radius:4px;color:#fff;background:#2980b9;min-width:48px;text-align:center}
+.ep .pth{font-family:monospace;flex:1}
+.bdg{display:inline-block;padding:1px 10px;border-radius:10px;font-size:.8rem;font-weight:600}
+.bdg-ok{background:#28a745;color:#fff}
+.bdg-err{background:#dc3545;color:#fff}
+.bdg-warn{background:#ffc107;color:#222}
+pre{background:#f4f5f7;padding:12px 16px;border-radius:6px;overflow-x:auto;font-size:.88rem;max-height:280px}
+ul{line-height:1.7;padding-left:20px}
+small{color:#6b7280}
+</style>
+</head>
+<body>
+
+<div class="card">
+<h1>🧪 Teste de Configuração</h1>
+<p>Verifica se o frontend consegue se comunicar com o backend C#.</p>
+</div>
+
+<div class="card">
+<h2>1. Configuração</h2>
+<div id="cfg"></div>
+</div>
+
+<div class="card">
+<h2>2. Conectividade</h2>
+<p><button onclick="testHealth()">Testar /api/health</button></p>
+<div id="conn"></div>
+</div>
+
+<div class="card">
+<h2>3. Endpoints</h2>
+<p><button onclick="testEndpoints()">Testar endpoints conhecidos</button></p>
+<div id="ep"></div>
+</div>
+
+<div class="card">
+<h2>4. Informações</h2>
+<div id="sys"></div>
+</div>
+
+<script src="config.js"></script>
+<script>
+function sh(kind, msg){var c={ok:'s-ok',err:'s-err',warn:'s-warn',info:'s-info'}[kind];return '<div class="s '+c+'">'+msg+'</div>'}
+function api(p){return(window.FCN_API_BASE||'http://localhost:5136/api')+p}
+
+;(function cfg(){
+  var el=document.getElementById('cfg')
+  if(window.FCN_API_BASE) el.innerHTML=sh('ok','✅ <code>FCN_API_BASE</code> = <code>'+window.FCN_API_BASE+'</code>')
+  else el.innerHTML=sh('err','❌ FCN_API_BASE não definido')
+  if(window.FCNApi) el.innerHTML+=sh('ok','✅ FCNApi disponível')
+  else el.innerHTML+=sh('warn','⚠️ FCNApi não encontrado')
+})()
+
+async function testHealth(){
+  var div=document.getElementById('conn')
+  div.innerHTML=sh('info','🔄 Testando…')
+  try{
+    var url=api('/health'),res=await fetch(url),txt=await res.text()
+    div.innerHTML=sh('ok','✅ <code>'+url+'</code> → <strong>'+res.status+' '+res.statusText+'</strong>')+'<pre>'+(txt.slice(0,500)||'—')+'</pre>'
+  }catch(e){div.innerHTML=sh('err','❌ '+api('/health')+'<br>'+e.message)}
+}
+
+var EPS=[
+  {m:'GET',p:'/health',l:'Health-check'},
+  {m:'POST',p:'/auth/token/',l:'Login'},
+  {m:'GET',p:'/me/',l:'Me (auth)'},
+  {m:'GET',p:'/estado/',l:'Estado (admin)'},
+  {m:'GET',p:'/resumo/',l:'Resumo'},
+  {m:'GET',p:'/alertas/',l:'Alertas'},
+  {m:'GET',p:'/config/',l:'Config'},
+  {m:'GET',p:'/regioes/',l:'Regiões'},
+  {m:'GET',p:'/vendas/',l:'Vendas'},
+  {m:'GET',p:'/usuarios/',l:'Usuários (admin)'},
+]
+
+async function testEndpoints(){
+  var div=document.getElementById('ep')
+  div.innerHTML=sh('info','🔄 Testando '+EPS.length+' endpoints…')
+  var r=''
+  for(var i=0;i<EPS.length;i++){
+    var e=EPS[i]
+    try{
+      var url=api(e.p),res=await fetch(url,{method:e.m}),bdg,lb
+      if(res.ok){bdg='<span class="bdg bdg-ok">'+res.status+'</span>';lb='OK'}
+      else if(res.status===401||res.status===403){bdg='<span class="bdg bdg-warn">'+res.status+'</span>';lb='Requer auth'}
+      else{bdg='<span class="bdg bdg-err">'+res.status+'</span>';lb=res.statusText}
+      r+='<div class="ep"><span class="mtd">'+e.m+'</span><span class="pth">'+e.p+' <small>'+e.l+'</small></span> '+bdg+' '+lb+'</div>'
+    }catch(ex){r+='<div class="ep"><span class="mtd">'+e.m+'</span><span class="pth">'+e.p+' <small>'+e.l+'</small></span> <span class="bdg bdg-err">ERR</span> '+ex.message+'</div>'}
+  }
+  div.innerHTML=r||sh('err','Nenhum endpoint testado')
+}
+
+;(function info(){
+  document.getElementById('sys').innerHTML='<ul><li><strong>Navegador:</strong> '+navigator.userAgent.slice(0,80)+'…</li><li><strong>URL atual:</strong> <code>'+window.location.href+'</code></li><li><strong>API config:</strong> <code>'+(window.FCN_API_BASE||'—')+'</code></li></ul>'
+})()
+</script>
+</body>
+</html>

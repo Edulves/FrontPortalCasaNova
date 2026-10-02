@@ -1,0 +1,14 @@
+
+  ╔══════════════════════════════════════════════════╗
+  ║   Painel Feliz Casa Nova — Servidor de Dev      ║
+  ║                                                  ║
+  ║   Frontend: http://localhost:8080                   ║
+  ║   API:      http://localhost:8080/api               ║
+  ║   Backend:  http://localhost:5136                  ║
+  ║                                                  ║
+  ║   Pressione Ctrl+C para parar                   ║
+  ╚══════════════════════════════════════════════════╝
+
+POST /api/auth/token
+GET /
+GET /api/health

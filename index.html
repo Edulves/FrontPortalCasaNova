@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feliz Casa Nova · Painel de Vendas</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="chart.umd.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="global-loading" class="global-loading skip-hidden" aria-live="polite" aria-busy="true">
+  <div class="global-loading-card">
+    <div class="spinner" aria-hidden="true"></div>
+    <p id="global-loading-text">Carregando…</p>
+  </div>
+</div>
+
+<div id="api-banner" class="api-banner skip-hidden" role="alert"></div>
+
+<div id="login-screen" class="login-screen skip-hidden">
+  <div class="login-card">
+    <div class="brand-logo login-logo" id="login-logo-box"></div>
+    <h1>Feliz Casa Nova</h1>
+
+    <div id="login-panel">
+      <p class="hint">Entre para acessar o painel de vendas</p>
+      <form id="form-login">
+        <div class="field"><label>Usuário</label><input id="login-user" autocomplete="username" required value="admin"></div>
+        <div class="field"><label>Senha</label><input id="login-pass" type="password" autocomplete="current-password" required></div>
+        <p class="hint" id="login-error" style="color:var(--brick);"></p>
+        <button type="submit" class="btn btn-primary" style="width:100%;" id="btn-login-submit">Entrar</button>
+      </form>
+      <p class="hint" style="margin-top:14px;"><button type="button" class="linkish" id="btn-show-forgot">Esqueci a senha</button></p>
+      <p class="hint">API local: admin / admin123 (docker compose)</p>
+      <p class="login-legal">Ao entrar, você concorda com os <a href="/termos.html" target="_blank" rel="noopener">Termos de uso</a> e a <a href="/privacidade.html" target="_blank" rel="noopener">Política de privacidade</a>.</p>
+    </div>
+
+    <div id="forgot-panel" class="skip-hidden">
+      <p class="hint">Informe usuário ou e-mail. Em local, o link sai no log do backend.</p>
+      <form id="form-forgot">
+        <div class="field"><label>Usuário</label><input id="forgot-user" autocomplete="username"></div>
+        <div class="field"><label>E-mail</label><input id="forgot-email" type="email" autocomplete="email"></div>
+        <p class="hint" id="forgot-msg"></p>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Enviar link</button>
+      </form>
+      <p class="hint" style="margin-top:14px;"><button type="button" class="linkish" id="btn-back-login">Voltar ao login</button></p>
+    </div>
+
+    <div id="reset-panel" class="skip-hidden">
+      <p class="hint">Defina a nova senha</p>
+      <form id="form-reset">
+        <input type="hidden" id="reset-uid">
+        <input type="hidden" id="reset-token">
+        <div class="field"><label>Nova senha</label><input id="reset-pass" type="password" minlength="8" required autocomplete="new-password"></div>
+        <div class="field"><label>Confirmar</label><input id="reset-pass2" type="password" minlength="8" required autocomplete="new-password"></div>
+        <p class="hint" id="reset-msg"></p>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Salvar senha</button>
+      </form>
+      <p class="hint" style="margin-top:14px;"><button type="button" class="linkish" id="btn-back-login-2">Voltar ao login</button></p>
+    </div>
+  </div>
+</div>
+
+<div class="app-shell skip-hidden" id="app-shell">
+
+  <header class="masthead">
+    <div class="brand">
+      <div class="brand-logo" id="brand-logo-box"></div>
+      <div class="brand-copy">
+        <p class="brand-name skip-hidden" id="brand-name">Feliz Casa Nova</p>
+        <p class="brand-tag">Painel de vendas · regiões e construtoras</p>
+      </div>
+    </div>
+    <div class="masthead-meta">
+      <button class="btn btn-dark" id="btn-global-refresh" title="Buscar as fontes CSV cadastradas em Dados &amp; config">⟳ Atualizar planilha</button>
+      <button class="btn btn-primary" id="btn-global-add-venda">+ Nova venda</button>
+      <button class="btn btn-ghost btn-sm" id="btn-logout" title="Sair">Sair</button>
+      <div class="clock-chip"><span class="clock-dot"></span><span id="clock-text"></span></div>
+    </div>
+  </header>
+
+  <nav class="tabbar" id="tabbar"></nav>
+
+  <main id="view-root"></main>
+
+  <footer class="app-footer">
+    Painel SaaS — dados no servidor (API). Exporte o JSON quando precisar de backup local.
+    <div class="app-footer-links">
+      <a href="/termos.html" target="_blank" rel="noopener">Termos</a>
+      <a href="/privacidade.html" target="_blank" rel="noopener">Privacidade</a>
+    </div>
+  </footer>
+</div>
+
+<!-- aceite de termos (primeiro acesso) -->
+<div class="modal-backdrop" id="modal-termos">
+  <div class="modal">
+    <h3>Termos e privacidade</h3>
+    <p class="hint">Para continuar, confirme que leu e aceita os documentos abaixo (versão 2026-08-28).</p>
+    <ul class="hint" style="margin:12px 0 18px; padding-left:1.2rem;">
+      <li><a href="/termos.html" target="_blank" rel="noopener">Termos de uso</a></li>
+      <li><a href="/privacidade.html" target="_blank" rel="noopener">Política de privacidade</a></li>
+    </ul>
+    <label class="hint" style="display:flex; gap:8px; align-items:flex-start; margin-bottom:16px;">
+      <input type="checkbox" id="termos-check">
+      <span>Li e aceito os Termos de uso e a Política de privacidade.</span>
+    </label>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="btn-termos-sair">Sair</button>
+      <button type="button" class="btn btn-primary" id="btn-termos-aceitar" disabled>Continuar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL: venda ================= -->
+<div class="modal-backdrop" id="modal-venda">
+  <div class="modal">
+    <h3 id="modal-venda-title">Adicionar venda</h3>
+    <p class="hint" id="modal-venda-sub">Preencha os dados da venda.</p>
+    <form id="form-venda">
+      <input type="hidden" id="f-id">
+      <div class="form-grid">
+        <div class="field span-2"><label>Região (aba do painel)</label><select id="f-regiao"></select></div>
+        <div class="field"><label>Nº</label><input id="f-numero" placeholder="ex.: 154"></div>
+        <div class="field"><label>Cliente *</label><input id="f-cliente" required placeholder="Nome completo"></div>
+        <div class="field"><label>Telefone</label><input id="f-telefone" placeholder="(71) 90000-0000"></div>
+        <div class="field"><label>Corretor *</label><input id="f-corretor" required placeholder="Nome do corretor"></div>
+        <div class="field"><label>Construtora *</label><input id="f-construtora" required placeholder="ex.: DIRECIONAL"></div>
+        <div class="field"><label>Produto *</label><input id="f-produto" required placeholder="ex.: Boulevard"></div>
+        <div class="field"><label>Bloco / Quadra</label><input id="f-bloco"></div>
+        <div class="field"><label>Unidade</label><input id="f-unidade"></div>
+        <div class="field"><label>Origem do lead</label><input id="f-origem" placeholder="Carteira, Instagram, WhatsApp…"></div>
+        <div class="field"><label>Valor (R$) *</label><input id="f-valor" type="number" step="0.01" min="0" required></div>
+        <div class="field"><label>% comissão</label><input id="f-percentual" type="number" step="0.01" min="0" max="100"></div>
+        <div class="field"><label>Comissão (R$)</label><input id="f-comissao" type="number" step="0.01" min="0"></div>
+        <div class="field"><label>Financiamento</label><input id="f-financiado" placeholder="Associativo, À vista…"></div>
+        <div class="field"><label>Data de entrada em negociação</label><input id="f-dataEntrada" type="date"></div>
+        <div class="field"><label>Data de assinatura</label><input id="f-dataAssinatura" type="date"></div>
+      </div>
+      <p class="hint" style="margin-top:10px;">Deixe “Data de assinatura” em branco enquanto o contrato não for assinado — o painel vai alertar automaticamente se o processo demorar demais.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost skip-hidden" id="btn-delete-venda">Excluir</button>
+        <button type="button" class="btn btn-ghost" id="btn-cancel-venda">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btn-save-venda">Salvar venda</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ================= MODAL: venda perdida ================= -->
+<div class="modal-backdrop" id="modal-perdida">
+  <div class="modal">
+    <h3 id="modal-perdida-title">Registrar venda perdida</h3>
+    <p class="hint">Documente o motivo e planeje como tentar recuperar o cliente.</p>
+    <form id="form-perdida">
+      <input type="hidden" id="p-id">
+      <div class="form-grid">
+        <div class="field"><label>Mês da desistência</label>
+          <select id="p-mes">
+            <option>Janeiro</option><option>Fevereiro</option><option>Março</option><option>Abril</option>
+            <option>Maio</option><option>Junho</option><option>Julho</option><option>Agosto</option>
+            <option>Setembro</option><option>Outubro</option><option>Novembro</option><option>Dezembro</option>
+          </select>
+        </div>
+        <div class="field"><label>Ano</label><input id="p-ano" type="number"></div>
+        <div class="field span-2"><label>Cliente *</label><input id="p-cliente" required></div>
+        <div class="field"><label>Telefone</label><input id="p-telefone"></div>
+        <div class="field"><label>Corretor</label><input id="p-corretor"></div>
+        <div class="field"><label>Construtora</label><input id="p-construtora" placeholder="ex.: DIRECIONAL"></div>
+        <div class="field"><label>Produto</label><input id="p-produto"></div>
+        <div class="field span-2"><label>Motivo da perda</label><textarea id="p-motivo"></textarea></div>
+        <div class="field span-2"><label>Estratégia para reverter</label><textarea id="p-estrategia" placeholder="ex.: reabordar em 30 dias com opção de entrada facilitada…"></textarea></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost skip-hidden" id="btn-delete-perdida">Excluir</button>
+        <button type="button" class="btn btn-ghost" id="btn-cancel-perdida">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btn-save-perdida">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

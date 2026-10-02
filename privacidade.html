@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Política de Privacidade · Feliz Casa Nova</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="legal-page">
+    <header class="legal-header">
+      <a class="legal-back" href="/">← Voltar ao painel</a>
+      <h1>Política de Privacidade</h1>
+      <p class="legal-meta">Versão 2026-08-28 · Feliz Casa Nova — Painel de Vendas</p>
+      <p class="legal-draft">Rascunho operacional para homologação. Revise com assessoria jurídica antes de clientes externos.</p>
+    </header>
+
+    <article class="legal-body">
+      <section>
+        <h2>1. Quem somos</h2>
+        <p>O Painel Feliz Casa Nova é um sistema SaaS B2B para gestão de vendas imobiliárias, operado pela organização contratante (“Controladora”). Este documento descreve como dados pessoais são tratados ao usar o painel.</p>
+        <p><strong>Contato do encarregado / DPO:</strong> informe o e-mail institucional da sua organização (ex.: <a href="mailto:privacidade@felizcasanova.com.br">privacidade@felizcasanova.com.br</a>).</p>
+      </section>
+
+      <section>
+        <h2>2. Dados que tratamos</h2>
+        <ul>
+          <li><strong>Conta de usuário:</strong> nome de usuário, e-mail, senha (hash), papel (admin/operador/visualizador) e organização.</li>
+          <li><strong>Operação comercial:</strong> clientes, telefones, corretores, valores, datas e demais campos de vendas cadastrados pela equipe.</li>
+          <li><strong>Integrações:</strong> URLs de planilhas CSV autorizadas e metadados de sincronização.</li>
+          <li><strong>Técnicos:</strong> logs de acesso, IP, timestamps, erros de aplicação (quando monitoramento estiver ativo).</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>3. Finalidades e bases legais (LGPD)</h2>
+        <ul>
+          <li>Prestação do serviço contratado — execução de contrato (art. 7º, V).</li>
+          <li>Autenticação, segurança e prevenção a fraudes — legítimo interesse (art. 7º, IX) e obrigações legais quando aplicável.</li>
+          <li>Logs de produto (login, sync, exportação) — legítimo interesse para melhoria e suporte, sem cookies de marketing.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>4. Compartilhamento</h2>
+        <p>Dados ficam isolados por organização (multi-tenant). Não vendemos dados. Subprocessadores possíveis: hospedagem (VPS/cloud), banco PostgreSQL, provedor de e-mail (reset de senha) e, se configurado, Sentry para monitoramento de erros (sem envio de senhas ou tokens).</p>
+      </section>
+
+      <section>
+        <h2>5. Retenção</h2>
+        <p>Dados comerciais permanecem enquanto o contrato estiver ativo. Backups SQL seguem política interna (ex.: retenção diária por 7–90 dias). Após encerramento, dados podem ser exportados (JSON) e depois eliminados conforme acordo.</p>
+      </section>
+
+      <section>
+        <h2>6. Direitos do titular</h2>
+        <p>Titulares podem solicitar confirmação, acesso, correção, anonimização, portabilidade ou eliminação, nos limites legais, pelo canal do encarregado indicado acima. Usuários internos devem acionar o administrador da organização.</p>
+      </section>
+
+      <section>
+        <h2>7. Segurança</h2>
+        <p>Utilizamos HTTPS em produção, autenticação JWT, controle de papéis, rate limit na API e backups. Nenhuma medida é 100% infalível; incidentes serão comunicados conforme a LGPD.</p>
+      </section>
+
+      <section>
+        <h2>8. Alterações</h2>
+        <p>Esta política pode ser atualizada. A data da versão aparece no topo. Mudanças relevantes serão comunicadas aos administradores.</p>
+      </section>
+    </article>
+
+    <footer class="legal-footer">
+      <a href="/termos.html">Termos de uso</a>
+      <span>·</span>
+      <a href="/">Painel</a>
+    </footer>
+  </div>
+</body>
+</html>
